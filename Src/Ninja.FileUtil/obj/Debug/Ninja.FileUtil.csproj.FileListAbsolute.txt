@@ -1,0 +1,5 @@
+C:\Users\nshai\Documents\Visual Studio 2015\Projects\Ninja.FileUtil\Src\Ninja.FileUtil\obj\Debug\Ninja.FileUtil.csprojResolveAssemblyReference.cache
+C:\Users\nshai\Documents\Visual Studio 2015\Projects\Ninja.FileUtil\Src\Ninja.FileUtil\bin\Debug\Ninja.FileUtil.dll
+C:\Users\nshai\Documents\Visual Studio 2015\Projects\Ninja.FileUtil\Src\Ninja.FileUtil\bin\Debug\Ninja.FileUtil.pdb
+C:\Users\nshai\Documents\Visual Studio 2015\Projects\Ninja.FileUtil\Src\Ninja.FileUtil\obj\Debug\Ninja.FileUtil.dll
+C:\Users\nshai\Documents\Visual Studio 2015\Projects\Ninja.FileUtil\Src\Ninja.FileUtil\obj\Debug\Ninja.FileUtil.pdb
