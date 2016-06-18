@@ -3,20 +3,19 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using Ninja.FileUtil.Configuration;
 
 namespace Ninja.FileUtil.Parser.Impl
 {
-    public class LineParser<T> : ILineParser<T> where T : BaseFileLine, new()
+    public class LineParser : ILineParser
     {
-        private readonly ParserSettings settings;
-        
-        public LineParser(ParserSettings settings)
+        private readonly IDelimiter configuration;
+
+        public LineParser(IDelimiter configuration)
         {
-            this.settings = settings;
+            this.configuration = configuration;
         }
 
-        public T[] Parse(string[] lines) 
+        public T[] Parse<T>(IEnumerable<string> lines, LineType type) where T : IFileLine, new()
         {
             var list = new List<T>();
             var objLock = new object();
@@ -26,7 +25,7 @@ namespace Ninja.FileUtil.Parser.Impl
            Parallel.ForEach(lines.Select(line => new {Line = line, Index = index++ }), 
                 () => new List<T>(), (obj, loopstate, localStorage) =>
                 {
-                    var parsed = ParseLine(obj.Index, obj.Line);
+                    var parsed = ParseLine<T>(obj.Index, obj.Line, type);
                     localStorage.Add(parsed);
                     return localStorage;
                 },
@@ -42,13 +41,15 @@ namespace Ninja.FileUtil.Parser.Impl
                 return list.ToArray();
         }
 
-        private T  ParseLine(int index, string line) 
+        private T ParseLine<T>(int index, string line, LineType type) where T : IFileLine, new()
         {
-            var obj = new T();
+            var obj = new T
+            {
+                Index = index,
+                Type = type
+            };
 
-            obj.SetIndex(index);
-
-            var values = line.Split(settings.Delimeter);
+            var values = line.Split(configuration.Delimeter);
 
             if (values.Length == 0 || values.Length == 1)
             {
@@ -66,14 +67,14 @@ namespace Ninja.FileUtil.Parser.Impl
                 return obj;
             }
 
-            if ((settings.IsPlain && propInfos.Length != (values.Length + 1)) ||
-                (!settings.IsPlain && propInfos.Length != values.Length))
+            var isSimpleMode = IsSimpleMode();
+
+            if ((isSimpleMode && propInfos.Length != (values.Length + 1)) ||
+                (!isSimpleMode && propInfos.Length != values.Length))
             {
                 obj.SetError(ErrorMessage.InvalidLengthErrorFormat);
                 return obj;
             }
-
-            SetType(obj, values[0]);
             
             foreach (var propInfo in propInfos)
             {
@@ -81,7 +82,7 @@ namespace Ninja.FileUtil.Parser.Impl
                 {
                     var attribute = (ColumnAttribute) propInfo.GetCustomAttributes(typeof (ColumnAttribute), true).First();
 
-                    var pvalue = values[settings.IsPlain ? attribute.Index+ 1: attribute.Index];
+                    var pvalue = values[isSimpleMode ? attribute.Index + 1 : attribute.Index];
 
                     if (string.IsNullOrWhiteSpace(pvalue) && attribute.DefaultValue != null)
                         pvalue = attribute.DefaultValue.ToString();
@@ -121,31 +122,10 @@ namespace Ninja.FileUtil.Parser.Impl
             return obj;
         }
 
-        private void SetType(BaseFileLine obj, string type)
+        private bool IsSimpleMode()
         {
-            if (settings.IsPlain)
-            {
-                obj.SetType(LineType.Data);
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(type) ||
-                (!settings.IsPlain && !type.In(settings.Header, settings.Footer, settings.Data)))
-            {
-                obj.SetError(ErrorMessage.InvalidTypeValueError);
-                obj.SetType(LineType.Unknown);
-                return;
-            }
-
-            if(type.Equals(settings.Header, StringComparison.OrdinalIgnoreCase))
-                obj.SetType(LineType.Header);
-            else if (type.Equals(settings.Footer, StringComparison.OrdinalIgnoreCase))
-                obj.SetType(LineType.Footer);
-            else if (type.Equals(settings.Data, StringComparison.OrdinalIgnoreCase))
-                obj.SetType(LineType.Data);
-
+            return !configuration.GetType().IsAssignableFrom(typeof (IFullMode));
         }
-
     }
 
     public static class Extensions
@@ -154,7 +134,11 @@ namespace Ninja.FileUtil.Parser.Impl
         {
             return values != null && values.Contains(input);
         }
+
+        public static void SetError(this IFileLine obj, string error)
+        {
+            obj.Errors.Add(error);
+            obj.InError = true;
+        }
     }
-
-
 }
