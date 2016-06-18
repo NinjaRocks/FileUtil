@@ -1,8 +1,6 @@
-﻿using Ninja.FileUtil.Parser;
-
-namespace Ninja.FileUtil.Provider
+﻿namespace Ninja.FileUtil.Core
 {
-    public class ReadFile
+    public class RawFile
     {
         public string FilePath { get; set; }
         public string FileName { get; set; }

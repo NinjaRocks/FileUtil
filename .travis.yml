@@ -1,0 +1,8 @@
+language: csharp
+solution: Ninja.FileUtil.sln
+install:
+  - nuget restore Ninja.FileUtil.sln
+  - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
+script:
+  - xbuild /p:Configuration=Release Ninja.FileUtil.sln
+  - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./Test/Ninja.FileUtil.Tests/bin/Release/Ninja.FileUtil.Tests.dll

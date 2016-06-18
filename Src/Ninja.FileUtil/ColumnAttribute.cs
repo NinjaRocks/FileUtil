@@ -1,6 +1,6 @@
 using System;
 
-namespace Ninja.FileUtil.Parser
+namespace Ninja.FileUtil
 {
     public class ColumnAttribute : Attribute
     {

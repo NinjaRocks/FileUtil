@@ -1,4 +1,4 @@
-namespace Ninja.FileUtil
+namespace Ninja.FileUtil.Configuration
 {
     public class ParserSettings
     {
@@ -7,7 +7,5 @@ namespace Ninja.FileUtil
         public string Header { get; set; }
         public string Footer { get; set; }
         public string Data { get; set; }
-
-   
     }
 }
