@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Ninja.FileUtil.Configuration;
 
 namespace Ninja.FileUtil.Parser.Impl
 {
@@ -10,15 +11,6 @@ namespace Ninja.FileUtil.Parser.Impl
     {
         private readonly ParserSettings settings;
         
-        public LineParser():this(new ParserSettings
-        {
-            Delimeter = '|',
-            Data = "D",
-            Header = "H",
-            Footer = "F",
-            IsPlain = false
-        }){}
-
         public LineParser(ParserSettings settings)
         {
             this.settings = settings;

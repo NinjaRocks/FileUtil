@@ -1,23 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Ninja.FileUtil.Configuration;
+using Ninja.FileUtil.Core;
 
 namespace Ninja.FileUtil.Provider
 {
-    public class FileProvider : IFileProvider
+    public class DefaulProvider : IFileProvider
     {
-        private readonly ProviderSettings settings;
+        private readonly DefaultProviderSettings settings;
 
-        public FileProvider(ProviderSettings settings)
+        public DefaulProvider(DefaultProviderSettings settings)
         {
             this.settings = settings;
         }
 
-        public ReadFile[] GetFiles()
+        public RawFile[] GetFiles()
         {
-            var files = new List<ReadFile>();
+            var files = new List<RawFile>();
 
             var paths = GetPathLists();
 
@@ -33,7 +34,7 @@ namespace Ninja.FileUtil.Provider
 
                 var fileInfo = new FileInfo(path);
 
-                files.Add(new ReadFile
+                files.Add(new RawFile
                 {
                     FilePath = path,
                     FileName = fileInfo.Name,
@@ -54,7 +55,8 @@ namespace Ninja.FileUtil.Provider
 
                     var archiveLocation = Path.Combine(archivePath, fileInfo.Name);
 
-                   
+
+
                 }
             }
 
