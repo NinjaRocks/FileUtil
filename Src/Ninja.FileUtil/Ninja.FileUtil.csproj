@@ -41,7 +41,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Engine.cs" />
+    <Compile Include="Configuration\FullMode.cs" />
+    <Compile Include="Provider\IDefaultSettings.cs" />
+    <Compile Include="Parser\IDelimiter.cs" />
+    <Compile Include="IFullMode.cs" />
+    <Compile Include="ISimpleMode.cs" />
+    <Compile Include="Provider\IProviderSettings.cs" />
+    <Compile Include="Configuration\SimpleMode.cs" />
+    <Compile Include="Engine.Simple.cs" />
+    <Compile Include="Engine.Full.cs" />
     <Compile Include="File.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -53,19 +61,17 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Core\RawFile.cs" />
-    <Compile Include="Provider\DefaultProvider.cs" />
-    <Compile Include="BaseFileLine.cs" />
+    <Compile Include="Provider\RawFile.cs" />
+    <Compile Include="Provider\Impl\DefaultProvider.cs" />
     <Compile Include="ColumnAttribute.cs" />
     <Compile Include="Parser\IFileLine.cs" />
     <Compile Include="Parser\ErrorMessage.cs" />
-    <Compile Include="Configuration\ParserSettings.cs" />
     <Compile Include="Parser\ILineParser.cs" />
     <Compile Include="Parser\LineType.cs" />
-    <Compile Include="Core\IFileProvider.cs" />
+    <Compile Include="Provider\IFileProvider.cs" />
     <Compile Include="Parser\Impl\LineParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Configuration\DefaultProviderSettings.cs" />
+    <Compile Include="Configuration\ProviderSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

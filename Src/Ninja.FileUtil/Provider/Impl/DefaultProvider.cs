@@ -2,18 +2,16 @@
 using System.IO;
 using System.Linq;
 using System.Text;
-using Ninja.FileUtil.Configuration;
-using Ninja.FileUtil.Core;
 
-namespace Ninja.FileUtil.Provider
+namespace Ninja.FileUtil.Provider.Impl
 {
     public class DefaulProvider : IFileProvider
     {
-        private readonly DefaultProviderSettings settings;
+        private readonly IDefaultSettings settings;
 
-        public DefaulProvider(DefaultProviderSettings settings)
+        public DefaulProvider(IProviderSettings settings)
         {
-            this.settings = settings;
+            this.settings =  settings.ProviderSettings;
         }
 
         public RawFile[] GetFiles()
@@ -128,8 +126,7 @@ namespace Ninja.FileUtil.Provider
                 var line = sr.ReadLine();
                 if (line != null)
                     lines.Add(line);
-
-                sr.Close();
+              
             }
 
             return lines.ToArray();

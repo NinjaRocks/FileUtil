@@ -1,4 +1,4 @@
-﻿namespace Ninja.FileUtil.Core
+﻿namespace Ninja.FileUtil.Provider
 {
     public interface IFileProvider
     {

@@ -4,9 +4,9 @@ namespace Ninja.FileUtil.Parser
 {
     public interface IFileLine
     {
-        int Index { get;}
-        LineType Type { get; }
-        bool InError { get; }
-        IList<string> Errors { get;}
+        int Index { get; set; }
+        LineType Type { get; set; }
+        bool InError { get; set; }
+        IList<string> Errors { get; set; }
     }
 }

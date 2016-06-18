@@ -1,6 +1,8 @@
+using Ninja.FileUtil.Provider;
+
 namespace Ninja.FileUtil.Configuration
 {
-    public class DefaultProviderSettings
+    public class ProviderSettings : IDefaultSettings
     {
         public string FolderPath { get; set; }
         public string FileNameFormat { get; set; }
