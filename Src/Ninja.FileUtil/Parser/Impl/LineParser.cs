@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Ninja.FileUtil.Configuration;
+using Ninja.FileUtil.Properties;
 
 namespace Ninja.FileUtil.Parser.Impl
 {
-    public class LineParser : ILineParser
+    internal class LineParser : ILineParser
     {
         private readonly IDelimiter configuration;
 
@@ -15,21 +17,52 @@ namespace Ninja.FileUtil.Parser.Impl
             this.configuration = configuration;
         }
 
-        public T[] Parse<T>(IEnumerable<string> lines, LineType type) where T : IFileLine, new()
+        public T[] Parse<T>(string[] lines, LineType type) where T : IFileLine, new()
         {
             var list = new List<T>();
+           
+            if (lines == null || lines.Length == 0) return list.ToArray();
+
+            // list.AddRange(ParseMultiThread<T>(lines, type));
+            list.AddRange(ParseSequemtial<T>(lines, type));
+
+            return list.ToArray();
+        }
+
+        private List<T> ParseSequemtial<T>(string[] lines, LineType type) where T : IFileLine, new()
+        {
+            var list = new List<T>();
+
             var objLock = new object();
 
-           var index = 0;
-          
-           Parallel.ForEach(lines.Select(line => new {Line = line, Index = index++ }), 
-                () => new List<T>(), (obj, loopstate, localStorage) =>
+            var index = 0;
+            var inputs = lines.Select(line => new { Line = line, Index = index++ });
+
+            foreach (var obj in inputs)
+            {
+                var parsed = ParseLine<T>(obj.Index, obj.Line, type);
+                list.Add(parsed);
+            }
+
+            return list;
+        }
+
+        private List<T> ParseMultiThread<T>(string[] lines, LineType type) where T : IFileLine, new()
+        {
+            var list = new List<T>();
+
+            var objLock = new object();
+
+            var index = 0;
+            var inputs = lines.Select(line => new { Line = line, Index = index++ });
+
+            Parallel.ForEach(inputs, () => new List<T>(),
+                (obj, loopstate, localStorage) =>
                 {
                     var parsed = ParseLine<T>(obj.Index, obj.Line, type);
                     localStorage.Add(parsed);
                     return localStorage;
                 },
-
                 finalStorage =>
                 {
                     if (finalStorage == null) return;
@@ -38,7 +71,7 @@ namespace Ninja.FileUtil.Parser.Impl
                         list.AddRange(finalStorage);
                 });
 
-                return list.ToArray();
+            return list;
         }
 
         private T ParseLine<T>(int index, string line, LineType type) where T : IFileLine, new()
@@ -53,7 +86,7 @@ namespace Ninja.FileUtil.Parser.Impl
 
             if (values.Length == 0 || values.Length == 1)
             {
-                obj.SetError(ErrorMessage.InvalidLineFormat);
+                obj.SetError(Resources.InvalidLineFormat);
                 return obj;
             }
 
@@ -61,28 +94,28 @@ namespace Ninja.FileUtil.Parser.Impl
                 .Where(p => p.GetCustomAttributes(typeof(ColumnAttribute), true).Any() && p.CanWrite)
                 .ToArray();
 
-            if(propInfos.Length == 0)
+            if (propInfos.Length == 0)
             {
-                obj.SetError(string.Format(ErrorMessage.NoColumnAttributesFoundFormat, typeof(T).Name));
+                obj.SetError(string.Format(Resources.NoColumnAttributesFoundFormat, typeof(T).Name));
                 return obj;
             }
 
-            var isSimpleMode = IsSimpleMode();
+            var isSimpleMode = configuration.IsSimpleMode();
 
-            if ((isSimpleMode && propInfos.Length != (values.Length + 1)) ||
-                (!isSimpleMode && propInfos.Length != values.Length))
+            if ((isSimpleMode && propInfos.Length != (values.Length)) ||
+                (!isSimpleMode && propInfos.Length + 1 != values.Length))
             {
-                obj.SetError(ErrorMessage.InvalidLengthErrorFormat);
+                obj.SetError(Resources.InvalidLengthErrorFormat);
                 return obj;
             }
-            
+
             foreach (var propInfo in propInfos)
             {
                 try
                 {
-                    var attribute = (ColumnAttribute) propInfo.GetCustomAttributes(typeof (ColumnAttribute), true).First();
+                    var attribute = (ColumnAttribute)propInfo.GetCustomAttributes(typeof(ColumnAttribute), true).First();
 
-                    var pvalue = values[isSimpleMode ? attribute.Index + 1 : attribute.Index];
+                    var pvalue = values[isSimpleMode ? attribute.Index : attribute.Index + 1];
 
                     if (string.IsNullOrWhiteSpace(pvalue) && attribute.DefaultValue != null)
                         pvalue = attribute.DefaultValue.ToString();
@@ -91,7 +124,7 @@ namespace Ninja.FileUtil.Parser.Impl
                     {
                         if (string.IsNullOrWhiteSpace(pvalue))
                         {
-                            obj.SetError(string.Format(ErrorMessage.InvalidEnumValueErrorFormat, propInfo.Name));
+                            obj.SetError(string.Format(Resources.InvalidEnumValueErrorFormat, propInfo.Name));
                             continue;
                         }
 
@@ -115,30 +148,13 @@ namespace Ninja.FileUtil.Parser.Impl
                 }
                 catch (Exception e)
                 {
-                    obj.SetError(string.Format(ErrorMessage.LineExceptionFormat, propInfo.Name, e.Message) );
+                    obj.SetError(string.Format(Resources.LineExceptionFormat, propInfo.Name, e.Message));
                 }
             }
 
             return obj;
         }
-
-        private bool IsSimpleMode()
-        {
-            return !configuration.GetType().IsAssignableFrom(typeof (IFullMode));
-        }
     }
 
-    public static class Extensions
-    {
-        public static bool In(this string input, params string[] values)
-        {
-            return values != null && values.Contains(input);
-        }
 
-        public static void SetError(this IFileLine obj, string error)
-        {
-            obj.Errors.Add(error);
-            obj.InError = true;
-        }
-    }
 }
