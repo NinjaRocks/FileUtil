@@ -20,4 +20,11 @@ namespace Ninja.FileUtil.Tests.ParserTests
         public LineType Type { get; set; }
         public IList<string> Errors { get; set; }
     }
+
+    public class TestInvalidLine : IFileLine
+    {
+        public int Index { get; set; }
+        public LineType Type { get; set; }
+        public IList<string> Errors { get; set; }
+    }
 }

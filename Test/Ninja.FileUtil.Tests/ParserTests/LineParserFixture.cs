@@ -1,10 +1,9 @@
-﻿using Moq;
-
+﻿using System.Linq;
 using Ninja.FileUtil.Parser;
-using ISimpleConfig = Ninja.FileUtil.Configuration.Simple.IConfiguration;
-using IFullConfig = Ninja.FileUtil.Configuration.Full.IConfiguration;
 using Ninja.FileUtil.Parser.Impl;
 using NUnit.Framework;
+using ISimpleConfig = Ninja.FileUtil.Configuration.Simple.IConfiguration;
+using IFullConfig = Ninja.FileUtil.Configuration.Full.IConfiguration;
 
 namespace Ninja.FileUtil.Tests.ParserTests
 {
@@ -33,20 +32,22 @@ namespace Ninja.FileUtil.Tests.ParserTests
                 "Bob Marley|True",
                 "John Walsh|False"
             };
-            var prsed = parser.Parse<TestLine>(lines, LineType.Header);
 
-            //Assert.That(prsed.Length, Is.EqualTo(1));
+            var prsed = parser.Parse<TestLine>(lines, LineType.Data);
+
             Assert.That(prsed.Length, Is.EqualTo(2));
 
-            Assert.That(prsed[0].Name, Is.EqualTo("Bob Marley"));
-            Assert.That(prsed[0].IsMember, Is.EqualTo(true));
-            Assert.That(prsed[0].Type, Is.EqualTo(LineType.Header));
-            Assert.IsEmpty(prsed[0].Errors);
+            var first = prsed.First(x => x.Index == 0);
+            Assert.That(first.Name, Is.EqualTo("Bob Marley"));
+            Assert.That(first.IsMember, Is.EqualTo(true));
+            Assert.That(first.Type, Is.EqualTo(LineType.Data));
+            Assert.IsEmpty(first.Errors);
 
-            Assert.That(prsed[1].Name, Is.EqualTo("John Walsh"));
-            Assert.That(prsed[1].IsMember, Is.EqualTo(false));
-            Assert.That(prsed[1].Type, Is.EqualTo(LineType.Header));
-            Assert.IsEmpty(prsed[1].Errors);
+            var second = prsed.First(x => x.Index == 1);
+            Assert.That(second.Name, Is.EqualTo("John Walsh"));
+            Assert.That(second.IsMember, Is.EqualTo(false));
+            Assert.That(second.Type, Is.EqualTo(LineType.Data));
+            Assert.IsEmpty(second.Errors);
         }
 
         [Test]
@@ -59,19 +60,22 @@ namespace Ninja.FileUtil.Tests.ParserTests
                 "D|Bob Marley|True",
                 "D|John Walsh|False"
             };
+
             var prsed = parser.Parse<TestLine>(lines, LineType.Data);
 
             Assert.That(prsed.Length, Is.EqualTo(2));
 
-            Assert.That(prsed[0].Name, Is.EqualTo("Bob Marley"));
-            Assert.That(prsed[0].IsMember, Is.EqualTo(true));
-            Assert.That(prsed[0].Type, Is.EqualTo(LineType.Data));
-            Assert.IsEmpty(prsed[0].Errors);
+            var first = prsed.First(x => x.Index == 0);
+            Assert.That(first.Name, Is.EqualTo("Bob Marley"));
+            Assert.That(first.IsMember, Is.EqualTo(true));
+            Assert.That(first.Type, Is.EqualTo(LineType.Data));
+            Assert.IsEmpty(first.Errors);
 
-            Assert.That(prsed[1].Name, Is.EqualTo("John Walsh"));
-            Assert.That(prsed[1].IsMember, Is.EqualTo(false));
-            Assert.That(prsed[1].Type, Is.EqualTo(LineType.Data));
-            Assert.IsEmpty(prsed[1].Errors);
+            var second = prsed.First(x => x.Index == 1);
+            Assert.That(second.Name, Is.EqualTo("John Walsh"));
+            Assert.That(second.IsMember, Is.EqualTo(false));
+            Assert.That(second.Type, Is.EqualTo(LineType.Data));
+            Assert.IsEmpty(second.Errors);
         }
 
         [TestCase("hbtrb", true)]
@@ -82,6 +86,15 @@ namespace Ninja.FileUtil.Tests.ParserTests
         {
             if (!isSimple) parser = new LineParser(new TestFullConfig('|'));
             var result = parser.Parse<TestLine>(new []{line}, LineType.Data);
+
+            Assert.IsNotEmpty(result[0].Errors);
+        }
+
+        [Test]
+        public void TestParseForInvalidFileLineWithNoColumnAttributesShouldReturnError()
+        {
+
+            var result = parser.Parse<TestInvalidLine>(new[] { "edndx|medmd" }, LineType.Data);
 
             Assert.IsNotEmpty(result[0].Errors);
         }
