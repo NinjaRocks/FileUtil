@@ -23,34 +23,6 @@ namespace Ninja.FileUtil.Parser.Impl
            
             if (lines == null || lines.Length == 0) return list.ToArray();
 
-            // list.AddRange(ParseMultiThread<T>(lines, type));
-            list.AddRange(ParseSequemtial<T>(lines, type));
-
-            return list.ToArray();
-        }
-
-        private List<T> ParseSequemtial<T>(string[] lines, LineType type) where T : IFileLine, new()
-        {
-            var list = new List<T>();
-
-            var objLock = new object();
-
-            var index = 0;
-            var inputs = lines.Select(line => new { Line = line, Index = index++ });
-
-            foreach (var obj in inputs)
-            {
-                var parsed = ParseLine<T>(obj.Index, obj.Line, type);
-                list.Add(parsed);
-            }
-
-            return list;
-        }
-
-        private List<T> ParseMultiThread<T>(string[] lines, LineType type) where T : IFileLine, new()
-        {
-            var list = new List<T>();
-
             var objLock = new object();
 
             var index = 0;
@@ -71,7 +43,7 @@ namespace Ninja.FileUtil.Parser.Impl
                         list.AddRange(finalStorage);
                 });
 
-            return list;
+            return list.ToArray();
         }
 
         private T ParseLine<T>(int index, string line, LineType type) where T : IFileLine, new()
