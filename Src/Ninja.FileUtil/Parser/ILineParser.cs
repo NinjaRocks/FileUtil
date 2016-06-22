@@ -1,10 +1,8 @@
-using System.Collections.Generic;
-
 namespace Ninja.FileUtil.Parser
 {
-    public interface ILineParser 
+    internal interface ILineParser
     {
-        T[] Parse<T>(IEnumerable<string> lines, LineType type) where T : IFileLine, new();
+        T[] Parse<T>(string[] lines, LineType type) where T : IFileLine, new();
     }
 
 }

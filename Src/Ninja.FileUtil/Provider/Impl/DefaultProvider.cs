@@ -1,38 +1,39 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
+using Ninja.FileUtil.Configuration;
 
 namespace Ninja.FileUtil.Provider.Impl
 {
-    public class DefaulProvider : IFileProvider
+    internal class DefaulProvider : IFileProvider
     {
-        private readonly IDefaultSettings settings;
+        private readonly IProviderSettings settings;
+        private readonly IFileHelper fileHelper;
 
-        public DefaulProvider(IProviderSettings settings)
+        public DefaulProvider(IProviderSettings settings, IFileHelper fileHelper)
         {
-            this.settings =  settings.ProviderSettings;
+            this.settings = settings;
+            this.fileHelper = fileHelper;
         }
 
-        public RawFile[] GetFiles()
+        public FileMeta[] GetFiles()
         {
-            var files = new List<RawFile>();
+            var files = new List<FileMeta>();
 
-            var paths = GetPathLists();
+            var paths = fileHelper.GetPathLists(settings.FolderPath, settings.FileNameFormat);
 
             if (!paths.Any()) return files.ToArray();
 
             foreach (var path in paths)
             {
-                if (!File.Exists(path))
+                if (!fileHelper.FileExists(path))
                     continue;
 
-                var lines = ReadAllLines(path);
-
+                var lines = fileHelper.ReadToLines(path);
 
                 var fileInfo = new FileInfo(path);
 
-                files.Add(new RawFile
+                files.Add(new FileMeta
                 {
                     FilePath = path,
                     FileName = fileInfo.Name,
@@ -40,96 +41,24 @@ namespace Ninja.FileUtil.Provider.Impl
                     Lines = lines
                 });
 
-                if (settings.ArchiveOnRead)
+                if (settings.ArchiveUponRead)
                 {
-                    var archivePath = settings.FolderPath + "/" +
-                                      (!string.IsNullOrWhiteSpace(settings.ArchiveFolderPath)
-                        ? settings.ArchiveFolderPath
-                        : "Archived");
+                    var archivePath = Path.Combine(settings.FolderPath, settings.ArchiveFolder);
 
-
-                    if (!Directory.Exists(archivePath))
-                        Directory.CreateDirectory(archivePath);
+                    fileHelper.EnsureFolderExist(archivePath);
 
                     var archiveLocation = Path.Combine(archivePath, fileInfo.Name);
 
+                    var archiveFileInfo = new FileInfo(archiveLocation);
 
-
+                    if (fileHelper.TryDeleteFile(archiveFileInfo) && fileHelper.TryMoveFile(fileInfo, archiveLocation))
+                        fileHelper.TryDeleteFile(fileInfo);
                 }
+                else
+                    fileHelper.TryDeleteFile(fileInfo);
             }
 
             return files.ToArray();
-        }
-
-        public bool TryDeleteFile(string fileLocation)
-        {
-            try
-            {
-                var destfileInfo = new FileInfo(fileLocation);
-
-                if (destfileInfo.Exists)
-                    destfileInfo.Delete();
-
-                return true;
-            }
-            catch (IOException)
-            {
-                return false;
-            }
-        }
-        public bool TryCreateFile(string fileLocation, string toWrite)
-        {
-            try
-            {
-                using (var fs = File.Create(fileLocation))
-                {
-                    var data = new UTF8Encoding(true).GetBytes(toWrite);
-                    fs.Write(data, 0, data.Length);
-                }
-
-                return true;
-            }
-            catch (IOException)
-            {
-                return false;
-            }
-        }
-
-        public bool TryMoveFile(string sourceFile, string destinationFile)
-        {
-            try
-            {
-                var fileInfo = new FileInfo(sourceFile);
-
-                fileInfo.MoveTo(destinationFile);
-                return true;
-            }
-            catch (IOException) //file is still locked
-            {
-                return false;
-            }
-        }
-        public string[] GetPathLists()
-        {
-            var filePaths = !string.IsNullOrWhiteSpace(settings.FileNameFormat)
-                ? Directory.GetFiles(settings.FolderPath, settings.FileNameFormat, SearchOption.TopDirectoryOnly)
-                : Directory.GetFiles(settings.FolderPath);
-
-            return filePaths;
-        }
-
-        public string[] ReadAllLines(string path)
-        {
-            var lines = new List<string>();
-            using (var sr = new StreamReader(File.Open(path, FileMode.Open)))
-            {
-                var line = sr.ReadLine();
-                if (line != null)
-                    lines.Add(line);
-              
-            }
-
-            return lines.ToArray();
         }
     }
 }

@@ -19,11 +19,12 @@ namespace Ninja.FileUtil
         public TF[] Footers { get; set; }
 
     }
+
     public class FileMeta
     {
         public string FilePath { get; set; }
         public string FileName { get; set; }
         public long FileSize { get; set; }
-        public string[] RawLines { get; set; }
+        public string[] Lines { get; set; }
     }
 }

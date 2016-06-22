@@ -9,4 +9,3 @@ C:\work\FileUtil\Src\Ninja.FileUtil\obj\Debug\Ninja.FileUtil.Properties.Resource
 C:\work\FileUtil\Src\Ninja.FileUtil\obj\Debug\Ninja.FileUtil.csproj.GenerateResource.Cache
 C:\work\FileUtil\Src\Ninja.FileUtil\obj\Debug\Ninja.FileUtil.dll
 C:\work\FileUtil\Src\Ninja.FileUtil\obj\Debug\Ninja.FileUtil.pdb
-C:\work\FileUtil\Src\Ninja.FileUtil\obj\Debug\Ninja.FileUtil.csprojResolveAssemblyReference.cache

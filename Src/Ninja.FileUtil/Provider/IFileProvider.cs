@@ -2,6 +2,6 @@
 {
     public interface IFileProvider
     {
-        RawFile[] GetFiles();
+        FileMeta[] GetFiles();
     }
 }

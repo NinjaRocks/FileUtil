@@ -1,4 +1,4 @@
-using Ninja.FileUtil.Parser;
+using Ninja.FileUtil.Configuration;
 
 namespace Ninja.FileUtil
 {
