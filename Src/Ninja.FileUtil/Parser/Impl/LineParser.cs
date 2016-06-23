@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Ninja.FileUtil.Configuration;
 using Ninja.FileUtil.Properties;
@@ -69,7 +70,7 @@ namespace Ninja.FileUtil.Parser.Impl
         {
             var obj = new T();
 
-            var values = line.Split(configuration.Delimiter);
+            var values = GetDelimiterSeparatedValues<T>(line);
 
             if (values.Length == 0 || values.Length == 1)
             {
@@ -77,9 +78,7 @@ namespace Ninja.FileUtil.Parser.Impl
                 return obj;
             }
 
-            var propInfos = typeof(T).GetProperties()
-                .Where(p => p.GetCustomAttributes(typeof(ColumnAttribute), true).Any() && p.CanWrite)
-                .ToArray();
+            var propInfos = GetLineClassPropertyInfos<T>();
 
             if(propInfos.Length == 0)
             {
@@ -138,6 +137,22 @@ namespace Ninja.FileUtil.Parser.Impl
             }
 
             return obj;
+        }
+
+        private static PropertyInfo[] GetLineClassPropertyInfos<T>() where T : IFileLine, new()
+        {
+            var propInfos = typeof (T).GetProperties()
+                .Where(p => p.GetCustomAttributes(typeof (ColumnAttribute), true).Any() && p.CanWrite)
+                .ToArray();
+            return propInfos;
+        }
+
+        private string[] GetDelimiterSeparatedValues<T>(string line) where T : IFileLine, new()
+        {
+            var values = line.Split(configuration.Delimiter)
+                .Select(x => x.Trim())
+                .ToArray();
+            return values;
         }
     }
 }

@@ -49,11 +49,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\SettingsFixture.cs" />
-    <Compile Include="Engine\EngineFixture.cs" />
-    <Compile Include="Engine\DataLine.cs" />
-    <Compile Include="Engine\FooterLine.cs" />
-    <Compile Include="Engine\HeaderLine.cs" />
-    <Compile Include="Engine\SingleLine.cs" />
+    <Compile Include="Engine\MultiDelimited\DataLine.cs" />
+    <Compile Include="Engine\MultiDelimited\FooterLine.cs" />
+    <Compile Include="Engine\MultiDelimited\HeaderLine.cs" />
+    <Compile Include="Engine\MultiDelimited\EngineFixture.cs" />
+    <Compile Include="Engine\SingleDelimited\EngineFixture.cs" />
+    <Compile Include="Engine\SingleDelimited\SingleLine.cs" />
     <Compile Include="Parser\InvalidTestLine.cs" />
     <Compile Include="Parser\LineParserFixture.cs" />
     <Compile Include="Parser\TestLine.cs" />

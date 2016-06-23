@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ninja.FileUtil.Tests.Engine
+namespace Ninja.FileUtil.Tests.Engine.MultiDelimited
 {
     public class HeaderLine : FileLine
     {
