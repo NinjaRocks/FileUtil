@@ -1,5 +1,5 @@
 # FileUtil [![Build Status](https://travis-ci.org/NinjaRocks/FileUtil.svg?branch=master)](https://travis-ci.org/NinjaRocks/FileUtil) 
-.Net Library to read from fixed width text file (or file with delimiter-separated values) using typed objects.
+.Net Library to read from fixed width or delimiter separated file using strongly typed objects.
 
 
 -------------
@@ -75,7 +75,7 @@ file with no header and footer rows (or rows with no line heads).
      <FileUtil>
       <Settings>
         <Parser  delimiter="|"/>
-        <Provider folderPath="C:work\file.txt"
+        <Provider folderPath="C:work"
                   fileNameFormat="File*.txt" archiveUponRead="true" archiveFolder="Archived"/>    
       </Settings>
      </FileUtil>     
@@ -84,11 +84,13 @@ file with no header and footer rows (or rows with no line heads).
 
  At a minimal, you can just specify the provider element with folder
  location and not specify any other attributes (default values shown
- will be used). `<provider folderPath="C:work\file.txt"/>` 
+ will be used). `<provider folderPath="C:work"/>` 
  
- The fileNameFormat attribute shown by default is empty and can
- be used to search the folder location for files with a specific name
- pattern. `<Provider                  fileNameFormat="File*.txt"/>`
+ The fileNameFormat attribute shown (by default is empty) can
+ be used to search the folder location for files with a specific name pattern.
+ if not specified then all available files in the folder location will be searched.
+ 
+ `<Provider                  fileNameFormat="File*.txt"/>`
 
 **Code** 
 -------------
@@ -116,7 +118,7 @@ For the file below let us create the Line class.
             [Column(2)]
             public string Sex { get; set; }
             [Column(3, "London")]
-            public bool Location { get; set; }
+            public string Location { get; set; }
         } 
 
 Then use the engine class to get the parsed values.
