@@ -36,12 +36,13 @@ namespace Ninja.FileUtil.Tests.Engine.MultiDelimited
         [Test]
         public void TestGetFilesForFileReceivedFromProviderShouldReturnEmptyCollection()
         {
+            var date = new DateTime(2016, 10,22);
             var fileMeta = new FileMeta
             {
                 FileName = "name",
                 FilePath = "path",
                 FileSize = 1234,
-                Lines = new[] { "H|22-10-2016|Employee Status", "D|John Walsh|456RT4|True", "F|1" }
+                Lines = new[] { string.Format("H|{0}|Employee Status", date.ToShortDateString()), "D|John Walsh|456RT4|True", "F|1" }
             };
 
             provider.Setup(x => x.GetFiles()).Returns(new[] { fileMeta });
@@ -59,7 +60,7 @@ namespace Ninja.FileUtil.Tests.Engine.MultiDelimited
             Assert.That(parsedfiles[0].Headers[0].Index, Is.EqualTo(0));
             Assert.That(parsedfiles[0].Headers[0].Type, Is.EqualTo(LineType.Header));
             Assert.IsEmpty(parsedfiles[0].Headers[0].Errors);
-            Assert.That(parsedfiles[0].Headers[0].Date, Is.EqualTo(new DateTime(2016, 10, 22)));
+            Assert.That(parsedfiles[0].Headers[0].Date, Is.EqualTo(date));
             Assert.That(parsedfiles[0].Headers[0].Name, Is.EqualTo("Employee Status"));
           
             

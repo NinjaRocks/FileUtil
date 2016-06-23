@@ -150,7 +150,7 @@ namespace Ninja.FileUtil.Parser.Impl
         private string[] GetDelimiterSeparatedValues<T>(string line) where T : IFileLine, new()
         {
             var values = line.Split(configuration.Delimiter)
-                .Select(x => x.Trim())
+                .Select(x => !string.IsNullOrWhiteSpace(x)? x.Trim(): x)
                 .ToArray();
             return values;
         }
