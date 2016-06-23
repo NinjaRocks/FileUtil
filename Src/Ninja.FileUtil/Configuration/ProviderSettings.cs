@@ -4,10 +4,13 @@ namespace Ninja.FileUtil.Configuration
 {
     public class ProviderSettings : ConfigurationElement, IProviderSettings
     {
-        private const string FolderPathKey = "FolderPath";
-        private const string FileNameFormatKey = "FileNameFormat";
-        private const string ArchiveUponReadKey = "ArchiveUponRead";
-        private const string ArchiveFolderKey = "ArchiveFolder";
+        private const string FolderPathKey = "folderPath";
+        private const string FileNameFormatKey = "fileNameFormat";
+        private const string ArchiveUponReadKey = "archiveUponRead";
+        private const string ArchiveFolderKey = "archiveFolder";
+
+        public const bool ArchiveUponReadDefault = true;
+        public const string ArchiveFolderDefault = "Archived";
 
         [ConfigurationProperty(FolderPathKey, IsRequired = true)]
         public virtual string FolderPath
@@ -36,7 +39,7 @@ namespace Ninja.FileUtil.Configuration
             }
         }
 
-        [ConfigurationProperty(ArchiveUponReadKey, IsRequired = false, DefaultValue = true)]
+        [ConfigurationProperty(ArchiveUponReadKey, IsRequired = false, DefaultValue = ArchiveUponReadDefault)]
         public virtual bool ArchiveUponRead
         {
             get
@@ -49,7 +52,7 @@ namespace Ninja.FileUtil.Configuration
             }
         }
 
-        [ConfigurationProperty(ArchiveFolderKey, IsRequired = true, DefaultValue = "Archived")]
+        [ConfigurationProperty(ArchiveFolderKey, IsRequired = false, DefaultValue = ArchiveFolderDefault)]
         public virtual string ArchiveFolder
         {
             get

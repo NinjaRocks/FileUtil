@@ -17,7 +17,7 @@ namespace Ninja.FileUtil.Provider.Impl
                 fileInfo.MoveTo(destinationFile);
                 return true;
             }
-            catch (IOException)
+            catch (IOException) 
             {
                 return false;
             }

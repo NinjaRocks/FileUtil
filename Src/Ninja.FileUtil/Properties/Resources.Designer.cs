@@ -64,57 +64,69 @@ namespace Ninja.FileUtil.Properties {
                 resourceCulture = value;
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to {0} failed to parse - Invalid enum value.
         /// </summary>
-        internal static string InvalidEnumValueErrorFormat {
-            get {
+        internal static string InvalidEnumValueErrorFormat
+        {
+            get
+            {
                 return ResourceManager.GetString("InvalidEnumValueErrorFormat", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Invalid line format - number of column values do not match.
         /// </summary>
-        internal static string InvalidLengthErrorFormat {
-            get {
+        internal static string InvalidLengthErrorFormat
+        {
+            get
+            {
                 return ResourceManager.GetString("InvalidLengthErrorFormat", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Invalid line format - is not delimeter separated.
         /// </summary>
-        internal static string InvalidLineFormat {
-            get {
+        internal static string InvalidLineFormat
+        {
+            get
+            {
                 return ResourceManager.GetString("InvalidLineFormat", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Invalid line format -  Invalid line type value.
         /// </summary>
-        internal static string InvalidTypeValueError {
-            get {
+        internal static string InvalidTypeValueError
+        {
+            get
+            {
                 return ResourceManager.GetString("InvalidTypeValueError", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to {0} failed to parse with error - {1}.
         /// </summary>
-        internal static string LineExceptionFormat {
-            get {
+        internal static string LineExceptionFormat
+        {
+            get
+            {
                 return ResourceManager.GetString("LineExceptionFormat", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to No column attributes found on Line  - {0}.
         /// </summary>
-        internal static string NoColumnAttributesFoundFormat {
-            get {
+        internal static string NoColumnAttributesFoundFormat
+        {
+            get
+            {
                 return ResourceManager.GetString("NoColumnAttributesFoundFormat", resourceCulture);
             }
         }

@@ -1,7 +1,0 @@
-C:\work\FileUtil\Src\Ninja.FileUtil\bin\Debug\Ninja.FileUtil.Core.dll
-C:\work\FileUtil\Src\Ninja.FileUtil\bin\Debug\Ninja.FileUtil.Core.pdb
-C:\work\FileUtil\Src\Ninja.FileUtil\obj\Debug\Ninja.FileUtil.Core.dll
-C:\work\FileUtil\Src\Ninja.FileUtil\obj\Debug\Ninja.FileUtil.Core.pdb
-C:\work\FileUtil\Src\Ninja.FileUtil\obj\Debug\Ninja.FileUtil.Core.csprojResolveAssemblyReference.cache
-C:\work\FileUtil\Src\Ninja.FileUtil\obj\Debug\Ninja.FileUtil.Core.Properties.Resources.resources
-C:\work\FileUtil\Src\Ninja.FileUtil\obj\Debug\Ninja.FileUtil.Core.csproj.GenerateResource.Cache

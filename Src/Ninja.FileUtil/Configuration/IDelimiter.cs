@@ -2,6 +2,6 @@ namespace Ninja.FileUtil.Configuration
 {
     public interface IDelimiter
     {
-        char Delimeter { get; set; }
+        char Delimiter { get; set; }
     }
 }

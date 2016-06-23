@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Ninja.FileUtil.Configuration;
 using Ninja.FileUtil.Properties;
 
+
 namespace Ninja.FileUtil.Parser.Impl
 {
     internal class LineParser : ILineParser
@@ -17,21 +18,37 @@ namespace Ninja.FileUtil.Parser.Impl
             this.configuration = configuration;
         }
 
-        public T[] Parse<T>(string[] lines, LineType type) where T : IFileLine, new()
+        public T[] ParseWithNoLineType<T>(string[] lines) where T : IFileLine, new()
         {
-            var list = new List<T>();
+            return Parse<T>(lines, LineType.Data, false);
+
+        }
+
+        public T[] ParseWithLineType<T>(string[] lines, LineType type) where T : IFileLine, new()
+        {
+            return Parse<T>(lines, type, true);
+        }
+
+        private T[] Parse<T>(string[] lines, LineType type, bool hasLineHeader) where T : IFileLine, new()
+        {
            
-            if (lines == null || lines.Length == 0) return list.ToArray();
+            if (lines == null || lines.Length == 0) return Enumerable.Empty<T>().ToArray();
+
+            var list = new T[lines.Length];
 
             var objLock = new object();
 
             var index = 0;
-            var inputs = lines.Select(line => new { Line = line, Index = index++ });
+            var inputs = lines.Select(line => new { Line = line, Index = index++, Type = type});
 
             Parallel.ForEach(inputs, () => new List<T>(),
                 (obj, loopstate, localStorage) =>
                 {
-                    var parsed = ParseLine<T>(obj.Index, obj.Line, type);
+                    var parsed = ParseLine<T>(obj.Line, hasLineHeader);
+                    
+                    parsed.Index = obj.Index;
+                    parsed.Type = obj.Type;
+
                     localStorage.Add(parsed);
                     return localStorage;
                 },
@@ -40,21 +57,19 @@ namespace Ninja.FileUtil.Parser.Impl
                     if (finalStorage == null) return;
 
                     lock (objLock)
-                        list.AddRange(finalStorage);
+                        finalStorage.ForEach(f => list[f.Index] = f);
                 });
 
-            return list.ToArray();
+            
+            return list;
         }
 
-        private T ParseLine<T>(int index, string line, LineType type) where T : IFileLine, new()
+       
+        private T ParseLine<T>(string line,  bool hasLineHeader) where T : IFileLine, new()
         {
-            var obj = new T
-            {
-                Index = index,
-                Type = type
-            };
+            var obj = new T();
 
-            var values = line.Split(configuration.Delimeter);
+            var values = line.Split(configuration.Delimiter);
 
             if (values.Length == 0 || values.Length == 1)
             {
@@ -66,28 +81,26 @@ namespace Ninja.FileUtil.Parser.Impl
                 .Where(p => p.GetCustomAttributes(typeof(ColumnAttribute), true).Any() && p.CanWrite)
                 .ToArray();
 
-            if (propInfos.Length == 0)
+            if(propInfos.Length == 0)
             {
                 obj.SetError(string.Format(Resources.NoColumnAttributesFoundFormat, typeof(T).Name));
                 return obj;
             }
-
-            var isSimpleMode = configuration.IsSimpleMode();
-
-            if ((isSimpleMode && propInfos.Length != (values.Length)) ||
-                (!isSimpleMode && propInfos.Length + 1 != values.Length))
+            
+            if ((!hasLineHeader && propInfos.Length != (values.Length)) ||
+                (hasLineHeader && propInfos.Length + 1 != values.Length))
             {
                 obj.SetError(Resources.InvalidLengthErrorFormat);
                 return obj;
             }
-
+            
             foreach (var propInfo in propInfos)
             {
                 try
                 {
-                    var attribute = (ColumnAttribute)propInfo.GetCustomAttributes(typeof(ColumnAttribute), true).First();
+                    var attribute = (ColumnAttribute) propInfo.GetCustomAttributes(typeof (ColumnAttribute), true).First();
 
-                    var pvalue = values[isSimpleMode ? attribute.Index : attribute.Index + 1];
+                    var pvalue = values[!hasLineHeader ? attribute.Index : attribute.Index + 1];
 
                     if (string.IsNullOrWhiteSpace(pvalue) && attribute.DefaultValue != null)
                         pvalue = attribute.DefaultValue.ToString();
@@ -120,13 +133,11 @@ namespace Ninja.FileUtil.Parser.Impl
                 }
                 catch (Exception e)
                 {
-                    obj.SetError(string.Format(Resources.LineExceptionFormat, propInfo.Name, e.Message));
+                    obj.SetError(string.Format(Resources.LineExceptionFormat, propInfo.Name, e.Message) );
                 }
             }
 
             return obj;
         }
     }
-
-
 }
