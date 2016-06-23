@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using Ninja.FileUtil.Configuration;
 using Ninja.FileUtil.Parser;
 using Ninja.FileUtil.Parser.Impl;
@@ -7,7 +7,62 @@ using Ninja.FileUtil.Provider.Impl;
 
 namespace Ninja.FileUtil
 {
-    public class Engine
+    public class Engine<T> where T : FileLine, new()
+    {
+        private readonly IFileProvider provider;
+        private readonly ILineParser lineParser;
+
+        internal Engine(IFileProvider provider, ILineParser lineParser)
+        {
+            this.provider = provider;
+            this.lineParser = lineParser;
+        }
+
+        public Engine(IParserSettings config, IFileProvider provider)
+            : this(provider, new LineParser(config))
+        {
+
+        }
+
+        public Engine(Settings settings)
+            : this(settings.ParserSettings, new DefaulProvider(settings.ProviderSettings, new FileHelper()))
+        {
+
+        }
+
+        /// <summary>
+        /// Get all single fixed format lines from a text file parsed into a strongly typed array
+        /// Default delimiter is '|'
+        /// Example File -
+        /// "John Walsh|456RT4|True|Male"
+        /// "Simone Walsh|456RT5|True|Female"
+        /// </summary>
+        /// <typeparam name="T">Typed Line Class</typeparam>
+        /// <returns>
+        /// Collection of Files each parsed with typed class arrays
+        /// </returns>
+        public File<T>[] GetFiles()
+        {
+            var files = provider.GetFiles();
+            return files.Select(file => new File<T>
+            {
+                FileMeta = new FileMeta
+                {
+                    FileName = file.FileName,
+                    FilePath = file.FilePath,
+                    FileSize = file.FileSize,
+                    Lines = file.Lines,
+                },
+
+                Data = lineParser.ParseWithNoLineType<T>(file.Lines)
+            })
+            .ToArray();
+        }
+    }
+
+    public class Engine<TH, TD, TF> where TH : FileLine, new()
+                                    where TD : FileLine, new()
+                                    where TF : FileLine, new()
     {
         private readonly IFileProvider provider;
         private readonly ILineParser lineParser;
@@ -22,7 +77,7 @@ namespace Ninja.FileUtil
         public Engine(IParserSettings config, IFileProvider provider)
             : this(provider, new LineParser(config))
         {
-            this.config = config;
+            this.config  = config;
         }
 
         public Engine(Settings settings)
@@ -48,10 +103,7 @@ namespace Ninja.FileUtil
         /// <returns>
         /// Collection of Files each parsed with header, footer and data typed arrays
         /// </returns>
-        public File<TH, TD, TF>[] GetFiles<TH, TD, TF>()
-            where TH : FileLine, new()
-            where TD : FileLine, new()
-            where TF : FileLine, new()
+        public File<TH, TD, TF>[] GetFiles()
         {
             var files = provider.GetFiles();
 
@@ -74,34 +126,6 @@ namespace Ninja.FileUtil
 
                 return parsed;
 
-            }).ToArray();
-        }
-
-        /// <summary>
-        /// Get all single fixed format lines from a text file parsed into a strongly typed array
-        /// Default delimiter is '|'
-        /// Example File -
-        /// "John Walsh|456RT4|True|Male"
-        /// "Simone Walsh|456RT5|True|Female"
-        /// </summary>
-        /// <typeparam name="T">Typed Line Class</typeparam>
-        /// <returns>
-        /// Collection of Files each parsed with typed class arrays
-        /// </returns>
-        public File<T>[] GetFiles<T>() where T : FileLine, new()
-        {
-            var files = provider.GetFiles();
-            return files.Select(file => new File<T>
-            {
-                FileMeta = new FileMeta
-                {
-                    FileName = file.FileName,
-                    FilePath = file.FilePath,
-                    FileSize = file.FileSize,
-                    Lines = file.Lines,
-                },
-
-                Data = lineParser.ParseWithNoLineType<T>(file.Lines)
             }).ToArray();
         }
     }

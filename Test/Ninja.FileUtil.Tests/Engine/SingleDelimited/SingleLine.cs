@@ -1,4 +1,4 @@
-namespace Ninja.FileUtil.Tests.Engine
+namespace Ninja.FileUtil.Tests.Engine.SingleDelimited
 {
     public class SingleLine : FileLine
     {

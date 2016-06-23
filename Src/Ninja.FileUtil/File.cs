@@ -15,8 +15,8 @@
         public TH[] Headers { get; set; }
         public TD[] Data { get; set; }
         public TF[] Footers { get; set; }
-
     }
+
     public class FileMeta
     {
         public string FilePath { get; set; }

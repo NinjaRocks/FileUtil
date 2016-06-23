@@ -14,20 +14,20 @@ Each row contains one record of information; each record can contain multiple pi
 
 **CASE 1 :** Simple pipe '|' separated Delimeter File is shown below (this could even be comma ',' separated CSV)
 
-    Mr|Jack Marias|Male|London|Active|||
-    Dr|Bony Stringer|Male|New Jersey|Active||Paid|
-    Mrs|Mary Ward|Female||Active|||
-    Mr|Robert Webb|||Active|||
+    |Mr|Jack Marias|Male|London|Active|||
+    |Dr|Bony Stringer|Male|New Jersey|Active||Paid|
+    |Mrs|Mary Ward|Female||Active|||
+    |Mr|Robert Webb|||Active|||
 
 **CASE 2:** The above file could have a header and a footer. 
 In which case, each row has an identifier called as Line head to determine the type of row in the file. 
 
-    H|Department|Jun 23 2016  7:01PM
-    D||Jack Marias|Male|London|Active|||
-    D|Dr|Bony Stringer|Male|New Jersey|Active||Paid|
-    D|Mrs|Mary Ward|Female||Active|||
-    D|Mr|Robert Webb|||Active|||
-    F|4 Records|
+    |H|Department|Jun 23 2016  7:01PM|
+    |D||Jack Marias|Male|London|Active|||
+    |D|Dr|Bony Stringer|Male|New Jersey|Active||Paid|
+    |D|Mrs|Mary Ward|Female||Active|||
+    |D|Mr|Robert Webb|||Active|||
+    |F|4 Records|
 
 **FileUtil** can be used to parse both the shown formats above. The line heads and data column delimiters (separators) are configurable as per required use case.
 
