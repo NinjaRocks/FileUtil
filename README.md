@@ -14,22 +14,26 @@ Each row contains one record of information; each record can contain multiple pi
 
 **CASE 1 :** Simple pipe '|' separated Delimeter File is shown below (this could even be comma ',' separated CSV)
 
+>
     |Mr|Jack Marias|Male|London|Active|||
     |Dr|Bony Stringer|Male|New Jersey|Active||Paid|
     |Mrs|Mary Ward|Female||Active|||
     |Mr|Robert Webb|||Active|||
+>
 
 **CASE 2:** The above file could have a header and a footer. 
 In which case, each row has an identifier called as Line head to determine the type of row in the file. 
 
+>
     |H|Department|Jun 23 2016  7:01PM|
     |D||Jack Marias|Male|London|Active|||
     |D|Dr|Bony Stringer|Male|New Jersey|Active||Paid|
     |D|Mrs|Mary Ward|Female||Active|||
     |D|Mr|Robert Webb|||Active|||
     |F|4 Records|
+>
 
-**FileUtil** can be used to parse both of the shown formats above. The line heads and data column delimiters (separators) are configurable as required per use case.
+**FileUtil** can be used to parse both of the above shown formats. The line heads and data column delimiters (separators) are configurable as per use case.
 
 -------------
 
@@ -64,7 +68,7 @@ At a minimal you can specify the folder location `<provider folderPath="C:work"/
 
 By default, the file is read using the default file system provider. You can pass in your own implementation of the provider > to custom read file from desired location. We will later show how you can acheive this.
 
-
+>
     <configuration>     
 	     <configSections>
 	     <sectionGroup name="FileUtil">
@@ -80,6 +84,7 @@ By default, the file is read using the default file system provider. You can pas
      </FileUtil>     
     </configuration>
 
+>
 
  The  `<Provider  fileNameFormat="File*.txt"/>` attribute (by default is empty) can
  be used to search the folder location for files with a specific name pattern.
@@ -106,7 +111,7 @@ We use the column attribute to specify the column index and can optionally speci
 
 FileLine base class has an index property that holds the index of the parsed line relative to the whole file, an array of errors (should there be any column parsing failures) and type property to denote if the file is of type header, data or footer (default is data) 
  
-
+ >
      public class Employee : FileLine
         {
             [Column(0)]
@@ -118,6 +123,7 @@ FileLine base class has an index property that holds the index of the parsed lin
             [Column(3, "London")]
             public string Location { get; set; }
         } 
+>
 
 Once you have created the line class it is as simple as calling the Engine.GetFile() method as follows
 
@@ -149,7 +155,7 @@ The engine will parse the files found at the specified folder location and retur
 
 The configuration is the same as before. We can override the default line heads by specifying the required line head attribute in the parser settings.
 
-
+>
     <configuration>     
 	     <configSections>
 	     <sectionGroup name="FileUtil">
@@ -164,7 +170,7 @@ The configuration is the same as before. We can override the default line heads 
       </Settings>
      </FileUtil>     
     </configuration>
-
+>
 
 **Code** 
 -------------
@@ -174,6 +180,7 @@ ie one for the header, footer and data line respectively.
 
 We continue by creating two extra classes HeaderLine and FooterLine as follows.
 
+>
      public class HeaderLine : FileLine
         {
             [Column(0)]
@@ -181,13 +188,12 @@ We continue by creating two extra classes HeaderLine and FooterLine as follows.
             [Column(1)]
             public DateTime Date { get; set; }
         } 
-
      public class Footer : FileLine
         {
             [Column(0)]
             public string FileRemarks { get; set; }
         } 
-
+>
 
 To parse the file you call the GetFiles() Method as follows -
 > `var files = new Engine<HeaderLine, Employee, Footer>(new Settings()).GetFiles();`
@@ -208,6 +214,7 @@ To implement a custom provider you need to implement **IFileProvide** interface
 
 An example dummy implementation is as follows
 
+>
      public class CustomProvider : IFileProvider
     {
         public FileMeta[] GetFiles()
@@ -225,14 +232,16 @@ An example dummy implementation is as follows
             };
         }
     }
+>
 
 You can pass the custom provider to the engine as follows -
-
+>
  `var files = new Engine<Employee>(new Settings(), new CustomProvider()).GetFiles();`
+>
 
-
+>
  `var files = new Engine<HeaderLine, Employee, Footer>(new Settings(), new CustomProvider()).GetFiles();`
-
+>
 
 -------------
 
