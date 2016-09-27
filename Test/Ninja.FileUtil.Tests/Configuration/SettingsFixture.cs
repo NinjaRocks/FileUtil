@@ -23,7 +23,6 @@ namespace Ninja.FileUtil.Tests.Configuration
         private const string FileNameFormat = "DailyFeed_*.txt";
         private const string ArchiveUponRead = "true";
         private const string ArchiveFolder = "Archive";
-
        
 
         [SetUp]

@@ -7,16 +7,22 @@ namespace Ninja.FileUtil.Configuration
         public const string SectionXPath = "FileUtil/Settings";
         private const string ProviderSettingKey = "Provider";
         private const string ParserSettingKey = "Parser";
-
+        
         public Settings()
         {
             Properties.Add(new ConfigurationProperty(ParserSettingKey, typeof(ParserSettings), new ParserSettings()));
             Properties.Add(new ConfigurationProperty(ProviderSettingKey, typeof(ProviderSettings), null));
+          
         }
 
-        public static ProviderSettings GetSection()
+        public override bool IsReadOnly()
         {
-            return (ProviderSettings)ConfigurationManager.GetSection(SectionXPath);
+            return false;
+        }
+
+        public static Settings GetSection()
+        {
+            return (Settings)ConfigurationManager.GetSection(SectionXPath);
         }
 
 
